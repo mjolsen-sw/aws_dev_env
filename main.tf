@@ -51,9 +51,37 @@ resource "aws_security_group" "dev_sg" {
   description = "dev security group"
 
   ingress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = [var.sg_ip_address]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_key_pair" "dev_key" {
+  key_name   = "dev-key"
+  public_key = file(var.public_key_path)
+
+  tags = {
+    Name = "dev-key"
+  }
+}
+
+resource "aws_instance" "dev_instance" {
+  ami             = data.aws_ami.latest_ubuntu.id
+  instance_type   = "t3.micro"
+  subnet_id       = aws_subnet.public_subnet.id
+  key_name        = aws_key_pair.dev_key.key_name
+  security_groups = [aws_security_group.dev_sg.name]
+
+  tags = {
+    Name = "dev-instance"
   }
 }
