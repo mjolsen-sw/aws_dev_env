@@ -9,3 +9,9 @@ variable "public_key_path" {
   type        = string
   default     = "~/.ssh/dev_key.pub"
 }
+
+variable "host_os" {
+  description = "The operating system of the host machine"
+  type        = string
+  default     = "linux"
+}
